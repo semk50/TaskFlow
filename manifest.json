@@ -8,9 +8,9 @@
     "icons": [
         {
             "src": "icon.svg",
-            "sizes": "192x192",
+            "sizes": "any",
             "type": "image/svg+xml",
-            "purpose": "any"
+            "purpose": "any maskable"
         } 
     ]
 }
