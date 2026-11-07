@@ -143,6 +143,30 @@
             background: var(--surface);
         }
 
+        .install-button {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            min-height: 42px;
+            padding: 0 16px;
+            border: 0;
+            border-radius: 12px;
+            color: #ffffff;
+            font-weight: 700;
+            background: var(--primary);
+            box-shadow: 0 8px 20px rgba(99, 91, 255, 0.24);
+        }
+
+        .install-button.visible {
+            display: inline-flex;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -340,7 +364,10 @@
                     <h1>Bonjour !</h1>
                     <p class="date" id="date"></p>
                 </div>
-                <button class="theme-button" id="themeButton" aria-label="Changer le thème">◐</button>
+                <div class="header-actions">
+                    <button class="install-button" id="installButton" type="button">Installer</button>
+                    <button class="theme-button" id="themeButton" aria-label="Changer le thème">◐</button>
+                </div>
             </header>
 
             <section class="stats" aria-label="Statistiques">
@@ -464,6 +491,28 @@
             document.body.classList.toggle("dark");
         });
 
+        let installPrompt;
+        const installButton = document.getElementById("installButton");
+
+        window.addEventListener("beforeinstallprompt", event => {
+            event.preventDefault();
+            installPrompt = event;
+            installButton.classList.add("visible");
+        });
+
+        installButton.addEventListener("click", async () => {
+            if (!installPrompt) return;
+            installPrompt.prompt();
+            await installPrompt.userChoice;
+            installPrompt = null;
+            installButton.classList.remove("visible");
+        });
+
+        window.addEventListener("appinstalled", () => {
+            installPrompt = null;
+            installButton.classList.remove("visible");
+        });
+
         render();
 
     </script>
@@ -471,12 +520,7 @@
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('Service Worker enregistré avec succès:', registration);
-                    })
-                    .catch(error => {
-                        console.error('Échec de l\'enregistrement du Service Worker:', error);
-                    });
+                    .catch(error => console.error('Service Worker:', error));
             });
         }
     </script>
