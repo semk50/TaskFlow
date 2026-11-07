@@ -1,8 +1,9 @@
 const CACHE_NAME = 'mon-app-cache-v1';
 const asseetsToCache = [
-    '/',
-    '/index.html',
-    '/manifest.json',
+    './',
+    './index.html',
+    './manifest.json',
+    './icon.svg',
 ];
 
 self.addEventListener('install', (event) => {
