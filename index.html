@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#635bff">
+    <title>TaskFlow - Mes tâches</title>
+    <style>
+        :root {
+            --primary: #635bff;
+            --primary-dark: #4c43d9;
+            --background: #f4f5fb;
+            --surface: #ffffff;
+            --text: #24242f;
+            --muted: #77778a;
+            --border: #e7e7ef;
+            --success: #21a67a;
+            --shadow: 0 12px 35px rgba(36, 36, 47, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, "Segoe UI", sans-serif;
+            color: var(--text);
+            background: var(--background);
+        }
+
+        button, input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .app {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            padding: 28px 20px;
+            color: #ffffff;
+            background: linear-gradient(155deg, #635bff, #4b45bc);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 21px;
+            font-weight: 800;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        nav {
+            display: grid;
+            gap: 8px;
+            margin-top: 42px;
+        }
+
+        .nav-item {
+            width: 100%;
+            padding: 12px 14px;
+            border: 0;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.78);
+            background: transparent;
+            text-align: left;
+        }
+
+        .nav-item.active {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .avatar {
+            display: grid;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ffffff;
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        main {
+            width: min(1000px, 100%);
+            margin: 0 auto;
+            padding: 45px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(28px, 4vw, 42px);
+        }
+
+        .date {
+            margin: 8px 0 0;
+            color: var(--muted);
+        }
+
+        .theme-button {
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text);
+            background: var(--surface);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin: 32px 0;
+        }
+
+        .stat-card {
+            padding: 22px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .stat-value {
+            margin-top: 8px;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .task-panel {
+            padding: 26px;
+            border-radius: 20px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
+
+        .task-form {
+            display: flex;
+            gap: 12px;
+        }
+
+        .task-form input {
+            flex: 1;
+            min-width: 0;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            outline: none;
+            color: var(--text);
+            background: var(--background);
+        }
+
+        .task-form input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.12);
+        }
+
+        .add-button {
+            padding: 0 20px;
+            border: 0;
+            border-radius: 12px;
+            color: #ffffff;
+            font-weight: 700;
+            background: var(--primary);
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            margin: 22px 0 14px;
+        }
+
+        .filter {
+            padding: 7px 12px;
+            border: 0;
+            border-radius: 999px;
+            color: var(--muted);
+            background: var(--background);
+        }
+
+        .filter.active {
+            color: #ffffff;
+            background: var(--primary);
+        }
+
+        .task-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .task {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .task:last-child {
+            border-bottom: 0;
+        }
+
+        .task input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .task span {
+            flex: 1;
+        }
+
+        .task.completed span {
+            color: var(--muted);
+            text-decoration: line-through;
+        }
+
+        .delete {
+            border: 0;
+            color: #d9534f;
+            background: transparent;
+        }
+
+        .empty {
+            padding: 28px 0 10px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        body.dark {
+            --background: #171720;
+            --surface: #22222d;
+            --text: #f5f5fa;
+            --muted: #aaaabc;
+            --border: #343442;
+            --shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+        }
+
+        @media (max-width: 760px) {
+            .app {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: block;
+                padding: 18px 20px;
+            }
+
+            nav, .profile {
+                display: none;
+            }
+
+            main {
+                padding: 28px 18px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .task-form {
+                flex-direction: column;
+            }
+
+            .add-button {
+                min-height: 46px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand-mark">✓</span>
+                TaskFlow
+            </div>
+            <nav aria-label="Navigation principale">
+                <button class="nav-item active">Aujourd'hui</button>
+                <button class="nav-item">Toutes les tâches</button>
+                <button class="nav-item">Terminées</button>
+            </nav>
+            <div class="profile">
+                <span class="avatar">S</span>
+                <div>
+                    <strong>Utilisateur</strong>
+                    <div>Mon espace</div>
+                </div>
+            </div>
+        </aside>
+
+        <main>
+            <header>
+                <div>
+                    <h1>Bonjour !</h1>
+                    <p class="date" id="date"></p>
+                </div>
+                <button class="theme-button" id="themeButton" aria-label="Changer le thème">◐</button>
+            </header>
+
+            <section class="stats" aria-label="Statistiques">
+                <article class="stat-card">
+                    <div class="stat-label">À faire</div>
+                    <div class="stat-value" id="todoCount">0</div>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-label">Terminées</div>
+                    <div class="stat-value" id="doneCount">0</div>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-label">Progression</div>
+                    <div class="stat-value" id="progress">0%</div>
+                </article>
+            </section>
+
+            <section class="task-panel">
+                <form class="task-form" id="taskForm">
+                    <input id="taskInput" type="text" placeholder="Ajouter une nouvelle tâche..." aria-label="Nouvelle tâche" required>
+                    <button class="add-button" type="submit">Ajouter</button>
+                </form>
+
+                <div class="filters" aria-label="Filtres">
+                    <button class="filter active" data-filter="all">Toutes</button>
+                    <button class="filter" data-filter="todo">À faire</button>
+                    <button class="filter" data-filter="done">Terminées</button>
+                </div>
+                <ul class="task-list" id="taskList"></ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const storageKey = "taskflow-tasks";
+        let tasks = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        let currentFilter = "all";
+
+        const form = document.getElementById("taskForm");
+        const input = document.getElementById("taskInput");
+        const list = document.getElementById("taskList");
+
+        document.getElementById("date").textContent = new Intl.DateTimeFormat("fr-FR", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        }).format(new Date());
+
+        function saveTasks() {
+            localStorage.setItem(storageKey, JSON.stringify(tasks));
+        }
+
+        function render() {
+            const visibleTasks = tasks.filter(task =>
+                currentFilter === "all" ||
+                (currentFilter === "done" && task.done) ||
+                (currentFilter === "todo" && !task.done)
+            );
+
+            list.innerHTML = "";
+
+            if (visibleTasks.length === 0) {
+                list.innerHTML = '<li class="empty">Aucune tâche dans cette vue.</li>';
+            } else {
+                visibleTasks.forEach(task => {
+                    const item = document.createElement("li");
+                    item.className = `task${task.done ? " completed" : ""}`;
+                    item.innerHTML = `
+                        <input type="checkbox" ${task.done ? "checked" : ""} aria-label="Marquer la tâche comme terminée">
+                        <span></span>
+                        <button class="delete" aria-label="Supprimer la tâche">✕</button>
+                    `;
+                    item.querySelector("span").textContent = task.title;
+                    item.querySelector("input").addEventListener("change", () => toggleTask(task.id));
+                    item.querySelector(".delete").addEventListener("click", () => deleteTask(task.id));
+                    list.appendChild(item);
+                });
+            }
+
+            const doneCount = tasks.filter(task => task.done).length;
+            document.getElementById("todoCount").textContent = tasks.length - doneCount;
+            document.getElementById("doneCount").textContent = doneCount;
+            document.getElementById("progress").textContent =
+                tasks.length ? `${Math.round(doneCount / tasks.length * 100)}%` : "0%";
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(task => task.id === id ? { ...task, done: !task.done } : task);
+            saveTasks();
+            render();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(task => task.id !== id);
+            saveTasks();
+            render();
+        }
+
+        form.addEventListener("submit", event => {
+            event.preventDefault();
+            const title = input.value.trim();
+            if (!title) return;
+
+            tasks.unshift({ id: Date.now(), title, done: false });
+            input.value = "";
+            saveTasks();
+            render();
+        });
+
+        document.querySelectorAll(".filter").forEach(button => {
+            button.addEventListener("click", () => {
+                document.querySelector(".filter.active").classList.remove("active");
+                button.classList.add("active");
+                currentFilter = button.dataset.filter;
+                render();
+            });
+        });
+
+        document.getElementById("themeButton").addEventListener("click", () => {
+            document.body.classList.toggle("dark");
+        });
+
+        render();
+
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('Service Worker enregistré avec succès:', registration);
+                    })
+                    .catch(error => {
+                        console.error('Échec de l\'enregistrement du Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
