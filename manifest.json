@@ -1,10 +1,16 @@
 {
     "name": "TaskFlow",
     "short_name": "TaskFlow",
-    "description": "Application de gestion de tâches",
     "start_url": "./index.html",
-    "scope": "./",
     "display": "standalone",
     "background_color": "#f4f5fb",
-    "theme_color": "#635bff"
+    "theme_color": "#635bff",
+    "icons": [
+        {
+            "src": "icon.svg",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        } 
+    ]
 }
