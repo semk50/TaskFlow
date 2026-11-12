@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#635bff">
+    <meta name="app-le-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
     <title>TaskFlow - Mes tâches</title>
     <style>
@@ -343,6 +345,7 @@
             <div class="brand">
                 <span class="brand-mark">✓</span>
                 TaskFlow
+                <button id="notif-permission">🛎</button>
             </div>
             <nav aria-label="Navigation principale">
                 <button class="nav-item active">Aujourd'hui</button>
@@ -514,6 +517,21 @@
         });
 
         render();
+
+        const notifbtn = document.querySelector("#notif-permission");
+        notifbtn.addEventListener("click", async () => {
+            if (!("Notification" in window)) {
+                alert("Votre navigateur ne supporte pas les notifications.");
+                return;
+            }
+
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                new Notification("Merci d'avoir activé les notifications !");
+            } else {
+                alert("Vous avez refusé les notifications.");
+            }
+        });
 
     </script>
     <script>
